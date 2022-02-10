@@ -1,0 +1,528 @@
+-- Group 4 Databases Phase 3
+-- Michael Oren, Mel Haymart, Chris Ethridge
+
+-- Inventory(InvID,Size, IID)
+-- Inv_ID			# of characters			Unique Inventory ID
+-- Size			Integer					Size of particular inventory
+CREATE TABLE Inventory(
+    Inv_ID VARCHAR(8),
+    Size INT
+);
+
+-- PLAYER(PID,ItemHeldID, InvID, StartDate)
+-- Player_ID		6 Characters				Unique player code
+-- ItemHeldID		# of Characters			Unique Item code
+-- InvID			# of characters			Unique inventory code, foreign key
+-- ---------
+-- PStart_Date		Variable length string			Starting date of player	
+CREATE TABLE Player (
+    Player_ID VARCHAR(6) NOT NULL PRIMARY KEY,
+    ItemHeldID VARCHAR(8),
+    Inv_ID VARCHAR(8),
+    PStart_Date DATETIME,
+    FOREIGN KEY (Inv_ID) REFERENCES Inventory(Inv_ID)
+);
+
+-- ContactList(PID, ID ,FNAME, MNAME, LNAME, REL)
+-- Player ID		# of Characters			Unique player code
+-- ID			# of Characters			Unique player code
+-- First_Name		variable length string			Player’s first name
+-- Middle_Name		variable length string			Player’s middle name
+-- Last_Name		variable length string			Player’s last name
+-- Relationship		String					Relationship of players
+CREATE TABLE ContactList (
+    Player_ID VARCHAR(6) NOT NULL,
+    FOREIGN KEY (Player_ID) REFERENCES Player(Player_ID),
+    ID VARCHAR(6),
+    First_Name VARCHAR(255),
+    Last_Name VARCHAR(255),
+    Middle_Name VARCHAR(255),
+    Relationship VARCHAR(255)
+);
+
+
+-- Items(IID, Value, InvID)
+-- Item_ID		# of characters			Unique item code
+-- Inv_ID			# of characters			Unique Inventory ID
+-- Value			Integer					How much the item is worth
+CREATE TABLE Items (
+    Item_ID VARCHAR(8),
+    Inv_ID VARCHAR(8) NOT NULL,
+    FOREIGN KEY (INv_ID) REFERENCES Inventory(Inv_ID) ON DELETE CASCADE,
+    Value INT
+);
+
+-- Weapons(IID, Type, Damage)
+-- Item_ID		# of characters			Unique item code
+-- W_Type			variable string length			What type of weapon it is
+-- Damage		Integer					How much damage it does
+CREATE TABLE Weapons (
+    Item_ID VARCHAR(8),
+    W_Type VARCHAR(255),
+    Damage INT,
+    FOREIGN KEY (Item_ID) REFERENCES Items(Item_ID)
+);
+
+-- Armor(IID, Type, Defense)
+-- Item_ID		# of characters			Unique item code
+-- Type			variable string length			What type of armor it is
+-- Defense		Integer					How much defense it has
+CREATE TABLE Armor (
+    Item_ID VARCHAR(8),
+    A_Type VARCHAR(255),
+    Defense INT,
+    FOREIGN KEY (Item_ID) REFERENCES Items(Item_ID)
+);
+
+-- -- Potion(IID, Type, Effect)
+-- Item_ID		# of characters			Unique item code
+-- Type			variable string length			What type of potion it is		
+-- Effect			variable string length			What it does
+CREATE TABLE Potion (
+    Item_ID VARCHAR(8),
+    P_Type VARCHAR(255),
+    Effect VARCHAR(255),
+    FOREIGN KEY (Item_ID) REFERENCES Items(Item_ID)
+);
+
+-- Enemy(EID, InvID, ItemHeldID, Type, Level, Alive/Dead)
+-- Enemy_ID		# of characters			Unique enemy code
+-- Inv_ID			# of characters			Unique inventory code, foreign key
+-- ---------
+-- ItemHeldID		# of characters			Unique item code
+-- Type			variable string length			Type of enemy
+-- Level			Integer					Level of enemy
+-- Alive/Dead		Boolean				Is the enemy dead or alive
+CREATE TABLE Enemy (
+    Enemy_ID VARCHAR(8) UNIQUE,
+    Inv_ID VARCHAR(8) UNIQUE NOT NULL,
+    FOREIGN KEY(Inv_ID) REFERENCES Inventory(Inv_ID),
+    ItemHeldID VARCHAR(8) UNIQUE,
+    E_Type VARCHAR(255),
+    E_Level INT,
+    Alive BOOLEAN NOT NULL
+);
+
+-- Location(LID, InvID)
+-- Location_ID		# of characters			Unique location code
+
+CREATE TABLE Locations(
+    Location_ID VARCHAR(8) PRIMARY KEY
+);
+
+-- Shop(SID, InvID)
+-- Shop_ID		# of characters			Unique shop id
+-- Inv_ID			# of characters			Unique inventory code, foreign key
+-- ---------
+CREATE TABLE Shop (
+    Shop_ID VARCHAR(8) PRIMARY KEY,
+    Inv_ID VARCHAR(8) UNIQUE,
+    FOREIGN KEY (Inv_ID) REFERENCES Inventory(Inv_ID),
+    Location_ID VARCHAR(8),
+    FOREIGN KEY (Location_ID) REFERENCES Locations(Location_ID)
+);
+
+-- POPULATING THE TABLES
+
+-- Filling Weapons
+INSERT INTO Weapons
+(
+    Item_ID, W_Type, Damage
+)
+VALUES
+(
+    "00000004", "Sword", 5
+),
+(
+    "00000008", "Halberd", 6
+),
+(
+    "00000011", "Warhammer", 7
+);
+
+-- Filling Potion
+INSERT INTO Potion
+(
+    Item_ID, P_Type, Effect 
+)
+VALUES
+(
+    "00000002", "Heal", "2"
+),
+(
+    "00000003", "Heal", "2"
+),
+(
+    "00000007", "Heal", "2"
+);
+
+-- Filling Armor
+INSERT INTO Armor
+(
+    Item_ID, A_Type, Defense
+)
+VALUES
+(
+    "0000001", "Bad Armor", 1
+),
+(
+    "0000006", "Medium Armor", 5
+),
+(
+    "0000010", "Thicc Armor", 10
+);
+-- Adding items into table 'Items'
+INSERT INTO Items
+(
+    Item_ID, Inv_ID, Value  -- I THINK THIS MIGHT CAUSE AN ISSUE BUT IM NOT SURE. VALUE IS A KEYWORD
+)
+VALUES
+( -- Random items. I'm just gonna put them all in main player's inventory
+    "00000001", "00000001", 5
+),
+( -- Random items. I'm just gonna put them all in main player's inventory
+    "00000002", "00000001", 7
+),
+( -- Random items. I'm just gonna put them all in main player's inventory
+    "00000003", "00000001", 4
+),
+( -- Random items. I'm just gonna put them all in main player's inventory
+    "00000004", "00000001", 1
+),
+( -- Random items. I'm just gonna put them all in main player's inventory
+    "00000005", "00000001", 1
+),
+( -- Random items. These are for the shop
+    "00000006", "00000002", 5
+),
+( -- Random items. These are for the shop
+    "00000007", "00000002", 5
+),
+( -- Random items. These are for the shop
+    "00000008", "00000002", 5
+),
+( -- Random items. These are for the shop
+    "00000009", "00000002", 5
+),
+( -- Random items. enemy1
+    "00000010", "00000003", 7
+),
+( -- Random items. enemy1
+    "00000011", "00000003", 7
+);
+
+
+-- Insert rows into table 'Inventory'
+INSERT INTO Inventory
+( -- columns to insert data into
+ Inv_ID, Size
+)
+VALUES
+( -- main players Inventory
+ "00000001", 25
+),
+( -- Shop Inventory
+ "00000002", 100
+),
+( -- Enemy1 Inventory
+ "00000003", 5
+),
+( -- Enemy2 Inventory
+ "00000004", 5
+),
+( -- Friend1 Inventory
+ "00000005", 25
+),
+( -- Friend2 Inventory
+ "00000006", 25
+);
+
+-- YYYY-MM-DD
+-- Insert rows into table 'Player'
+INSERT INTO Player
+( -- columns to insert data into
+ Player_ID, ItemHeldID, Inv_ID, PStart_Date
+)
+VALUES
+( -- first row: main player
+ "123456", "00001000", "00000001", "2018-02-12"
+),
+( -- second row: Friend1
+ "234567", "00001001", "00000005", "2018-12-30"
+),
+( -- second row: Friend2
+ "345678", "00001002", "00000006", "2018-06-23"
+);
+
+-- Insert other players into contactlist
+INSERT INTO ContactList
+( -- columns to insert data into
+ Player_ID, First_Name, Last_Name, Middle_Name, Relationship
+)
+VALUES
+(-- first row:Friend1
+ "234567", "Leroy", "Jenkins", "Theman", "Ally"
+),
+( -- second row: Friend 2
+ "345678", "Allr", "Your", "Base", "Guildmate"
+);
+
+-- get_size_of_inventory():
+-- // This function will find the number of items in the inventory. It will access the inventory table
+-- Input: Inv_ID
+-- Select items with INV_ID of the input
+-- Count the number of items
+DELIMITER //
+
+CREATE FUNCTION get_inventory_size(inventoryID CHAR(8)) RETURNS int
+BEGIN
+    -- DECLARE date2 DATE;
+    DECLARE retval INT;
+    SET retval = (SELECT COUNT(*) FROM Items WHERE Inv_ID = inventoryID);
+    RETURN retval;
+    -- RETURN year(date2)-year(date1);
+END //
+
+DELIMITER ;
+
+
+-- get_time_played():
+-- // This function will find the number of hours played by the player. It will access the player table
+-- Input: PID
+-- Select the row with the PID from Table
+-- Calculate the time played from the start date of that row
+
+DELIMITER //
+
+CREATE FUNCTION get_time_played(PlayerID CHAR(6)) RETURNS INT
+BEGIN
+    DECLARE days_played INT;
+    SET days_played =  DATEDIFF(CURDATE(), (SELECT PStart_Date FROM Player WHERE Player_ID = PlayerID));
+    RETURN days_played;
+END //
+
+DELIMITER ;
+
+-- get_number_of_friends():
+-- // This function will find the number of friends that the player has. It will access the player table.
+-- Input: PID
+-- Retrieve the player’s contact list
+-- Select rows that have the friend relationship
+-- Count the number of rows in the list
+
+DELIMITER //
+
+CREATE FUNCTION get_number_of_friends(PID CHAR(6)) RETURNS INT
+BEGIN
+    DECLARE retval INT;
+    SET retval = (SELECT COUNT(*) FROM ContactList WHERE ID = PID);
+    RETURN retval;
+END //
+
+DELIMITER ;
+
+
+-- get_player_details():
+-- // This function will get the details of a player based upon the player_ID. It will access the Player table
+-- Input: PID
+-- Retrieve the row which corresponds to the PID from the player table
+-- Return the correct information
+DELIMITER //
+
+CREATE PROCEDURE get_player_details(PID CHAR(6))
+BEGIN
+    SELECT ItemHeldID, Inv_ID, PStart_Date 
+    FROM Player 
+    WHERE Player_ID = PID;
+END //
+DELIMITER ;
+
+-- DELIMITER ;
+
+
+-- move_item():
+-- // This function will move an item from one inventory to another. It will access the Inventory and the Item tables.
+-- Input: Inv_ID1, Inv_ID2, Item_ID
+-- Check that Item_ID is in Inv_ID1
+-- Check that the item exists in the Items table
+-- If Yes to both, then change the row values that correspond to Inv_ID1 to Inv_ID2
+-- Check that the item is now under Inv_ID2
+DELIMITER //
+
+CREATE FUNCTION move_item(Inv_ID1 CHAR(8), Inv_ID2 CHAR(8), Item_ID1 CHAR(8)) RETURNS INT
+BEGIN
+    DECLARE retval INT;
+    UPDATE Items
+    SET Inv_ID=Inv_ID2
+    WHERE Inv_ID=Inv_ID1 AND Item_ID=Item_ID1;
+    SET retval = (SELECT Inv_ID FROM Items WHERE Item_ID = Item_ID1);
+    RETURN retval;
+END //
+
+DELIMITER ;
+
+-- add_item():
+-- // This function will add an item to an inventory. This will be either to a shops inventory or an enemy’s inventory. It will access the Inventory, and item table.
+-- Input: Item_ID, Value, relevant subclass information, Inv_ID
+-- Insert Item into Item Table
+-- Insert Item into Inventory Table
+
+
+DELIMITER //
+
+CREATE FUNCTION add_weapon(Item_ID1 CHAR(8), Value1 INT, Inv_ID1 CHAR(8), Damage INT, SpecialType VARCHAR(255)) RETURNS VARCHAR(8)
+BEGIN
+    DECLARE retval INT;
+    INSERT INTO Items (Item_ID, Inv_ID, Value)
+    VALUES (Item_ID1, Inv_ID1, Value1);
+    
+    INSERT INTO Weapons
+    VALUES (Item_ID1, SpecialType, Damage);
+    
+    SET retval = (SELECT Inv_ID FROM Items WHERE Item_ID = Item_ID1);
+    RETURN retval;
+END //
+
+DELIMITER ;
+
+
+
+DELIMITER //
+
+
+CREATE FUNCTION add_potion(Item_ID1 CHAR(8), Value1 INT, Inv_ID1 CHAR(8), Effect VARCHAR(255), SpecialType VARCHAR(255)) RETURNS VARCHAR(8)
+BEGIN
+    DECLARE retval INT;
+    INSERT INTO Items (Item_ID, Inv_ID, Value)
+    VALUES (Item_ID1, Inv_ID1, Value1);
+    
+    INSERT INTO Potion
+    VALUES (Item_ID1, SpecialType, Effect);
+    
+    SET retval = (SELECT Inv_ID FROM Items WHERE Item_ID = Item_ID1);
+    RETURN retval;
+END //
+
+DELIMITER ;
+
+DELIMITER //
+
+
+CREATE FUNCTION add_armor(Item_ID1 CHAR(8), Value1 INT, Inv_ID1 CHAR(8), Defense1 INT, SpecialType VARCHAR(255)) RETURNS VARCHAR(8)
+BEGIN
+    DECLARE retval INT;
+    INSERT INTO Items (Item_ID, Inv_ID, Value)
+    VALUES (Item_ID1, Inv_ID1, Value1);
+    
+    INSERT INTO Armor
+    VALUES (Item_ID1, SpecialType, Defense1);
+    
+    SET retval = (SELECT Inv_ID FROM Items WHERE Item_ID = Item_ID1);
+    RETURN retval;
+END //
+
+DELIMITER ;
+
+-- destroy_item():
+-- // This function will destroy the record of that item. It will access the item and Inventory tables
+-- Input: Item_ID
+-- Retrieve the Inventory where the item is held
+-- Delete the item from the inventory
+-- Retrieve the row of the item Id from the item table
+-- Delete it from the table
+DELIMITER //
+
+
+CREATE FUNCTION destroy_item(Item_ID1 CHAR(8)) RETURNS VARCHAR(8)
+BEGIN
+    DECLARE retval VARCHAR(8);
+    DELETE FROM Items
+    WHERE Item_ID = Item_ID1;
+    
+    DELETE FROM Armor
+    WHERE Item_ID = Item_ID1;
+    
+    DELETE FROM Weapons
+    WHERE Item_ID = Item_ID1;
+    
+    DELETE FROM Potion
+    WHERE Item_ID = Item_ID1;
+    
+    SET retval = (SELECT Inv_ID FROM Items WHERE Item_ID = Item_ID1);
+    RETURN retval;
+END //
+
+DELIMITER ;
+
+
+
+
+
+-- show_stats():
+-- // This function is used to show all the non-null values related to a specific Item_ID. It accesses the Items table
+-- Input: Item_ID
+-- Retrieve the row of the Item corresponding to the Id
+-- Return all of the statistics relating to the item ie: the value, and the related subclass values such as type and damage for weapon
+DELIMITER //
+CREATE PROCEDURE show_Weapon_stats(IID VARCHAR(8))
+BEGIN
+    SELECT W_Type,Damage
+    FROM Weapons
+    WHERE IID = Item_ID;
+END //
+DELIMITER ;
+DELIMITER //
+CREATE PROCEDURE show_Armor_stats(IID VARCHAR(8))
+BEGIN
+    SELECT A_Type,Defense
+    FROM Armor
+    WHERE IID = Item_ID;
+END //
+DELIMITER ;
+DELIMITER //
+CREATE PROCEDURE show_Potion_stats(IID VARCHAR(8))
+BEGIN
+    SELECT P_Type,Effect
+    FROM Potion
+    WHERE IID = Item_ID;
+END //
+DELIMITER ;
+
+
+-- pickup_enemy_inventory():
+-- // This function is used to pick-up the inventory of a dead enemy. It accesses the Enemy, Inventory and Item tables
+-- Input: EnemyID, Current Players PID
+-- Retrieve the Inv_ID that belongs to the Enemy
+-- Retrieve the Inv_ID of that belongs to the player
+-- Use the move_item() to move all of the items from the enemy’s inventory to the player’s inventory
+
+-- We Realised that this function is the same as move_items() so it would be called in a for loop by the back end until the enemy inventory is empty
+
+
+-- ==========================
+-- SOME TEST QUERIES
+-- ==========================
+-- SELECT * FROM Inventory;
+-- SELECT * FROM Player;
+
+-- SELECT get_inventory_size("00000001");
+-- SELECT get_time_played("123456");
+-- SELECT get_number_of_friends("123456");
+-- SELECT get_player_details("123456");
+-- CALL get_player_details("123456");
+-- SELECT CALL get_number_of_friends("123456");
+
+-- SELECT move_item("00000002", "00000001", "00000006");
+
+
+-- SELECT add_potion("99999998", 15, "00000001", "8", "healerdealr");
+-- SELECT add_weapon("99999999", 2, "00000001", "23", "super swrod");
+-- SELECT add_armor("99999997", 345, "00000001", "222", "super amro");
+
+-- SELECT * FROM Weapons;
+-- SELECT * FROM Potion;
+-- SELECT * FROM Armor;
+
+-- SELECT destroy_item("00000004");
+-- SELECT * FROM Weapons;
+-- SELECT move_item("00000002", "00000001", "00000006");
